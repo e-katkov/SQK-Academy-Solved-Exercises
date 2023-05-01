@@ -66,4 +66,35 @@ FROM Trip
 WHERE town_to = 'Moscow'
 ```
 
+### [Задание 8](https://sql-academy.org/ru/trainer/tasks/8)
+В какие города можно улететь из Парижа (Paris) и сколько времени это займёт? Поля в результирующей таблице: town_to, flight_time
+
+Используйте конструкцию "as flight_time" для вывода необходимого времени. Это необходимо для корректной проверки. Формат для вывода времени: HH:MM:SS
+
+```sql
+SELECT town_to, TIMEDIFF(time_in, time_out) as flight_time
+FROM Trip
+WHERE town_from = 'Paris'
+```
+
+### [Задание 9](https://sql-academy.org/ru/trainer/tasks/9)
+Какие компании организуют перелеты из Владивостока (Vladivostok)? Поля в результирующей таблице: name
+
+```sql
+SELECT DISTINCT Company.name
+FROM Trip JOIN Company
+ON Trip.company = Company.id
+WHERE town_from = 'Vladivostok'
+```
+
+### [Задание 10](https://sql-academy.org/ru/trainer/tasks/10)
+Вывести вылеты, совершенные с 10 ч. по 14 ч. 1 января 1900 г. Поля в результирующей таблице: *
+
+```sql
+SELECT *
+FROM Trip
+WHERE time_out BETWEEN '1900-01-01T10:00:00'
+AND '1900-01-01T14:00:00'
+```
+
 
