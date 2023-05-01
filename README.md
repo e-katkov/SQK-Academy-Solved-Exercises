@@ -1,0 +1,1 @@
+# SQK-Academy-Solved-Exercises
