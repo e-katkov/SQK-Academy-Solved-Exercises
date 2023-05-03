@@ -97,4 +97,110 @@ WHERE time_out BETWEEN '1900-01-01T10:00:00'
 AND '1900-01-01T14:00:00'
 ```
 
+### [Задание 11](https://sql-academy.org/ru/trainer/tasks/11)
+Вывести пассажиров с самым длинным именем. Поля в результирующей таблице: name
+
+```sql
+SELECT name
+FROM Passenger
+WHERE LENGTH(name) = (
+		SELECT max(LENGTH(name))
+		FROM Passenger
+	)
+```
+
+### [Задание 13](https://sql-academy.org/ru/trainer/tasks/13)
+Вывести имена людей, у которых есть полный тёзка среди пассажиров. Поля в результирующей таблице: name
+
+```sql
+SELECT name
+FROM Passenger
+GROUP BY name
+HAVING count(*) >= 2
+```
+
+### [Задание 14](https://sql-academy.org/ru/trainer/tasks/14)
+В какие города летал Bruce Willis. Поля в результирующей таблице: town_to
+
+```sql
+SELECT DISTINCT Trip.town_to
+FROM Trip
+	JOIN Pass_in_trip ON Trip.id = Pass_in_trip.trip)
+	JOIN Passenger ON Pass_in_trip.passenger = Passenger.id
+WHERE Passenger.name = 'Bruce Willis'
+```
+
+### [Задание 15](https://sql-academy.org/ru/trainer/tasks/15)
+Выведите дату и время прилёта пассажира Стив Мартин (Steve Martin) в Лондон (London). Поля в результирующей таблице: time_in
+
+```sql
+SELECT Trip.time_in
+FROM Trip
+	JOIN Pass_in_trip ON Trip.id = Pass_in_trip.trip)
+	JOIN Passenger ON Pass_in_trip.passenger = Passenger.id
+WHERE Passenger.name = 'Steve Martin'
+AND Trip.town_to = 'London'
+```
+
+### [Задание 16](https://sql-academy.org/ru/trainer/tasks/16)
+Вывести отсортированный по количеству перелетов (по убыванию) и имени (по возрастанию) список пассажиров, совершивших хотя бы 1 полет. Поля в результирующей таблице: name, count
+
+```sql
+SELECT Passenger.name, count(Pass_in_trip.id) as count
+FROM Trip
+	JOIN Pass_in_trip ON Trip.id = Pass_in_trip.trip)
+	JOIN Passenger ON Pass_in_trip.passenger = Passenger.id
+GROUP BY Passenger.name
+HAVING count(Pass_in_trip.id) >= 1
+ORDER BY count(Pass_in_trip.id) DESC, name
+```
+
+### [Задание 17](https://sql-academy.org/ru/trainer/tasks/17)
+Определить, сколько потратил в 2005 году каждый из членов семьи. В результирующей выборке не выводите тех членов семьи, которые ничего не потратили. Поля в результирующей таблице: member_name, status, costs
+
+```sql
+SELECT FamilyMembers.member_name,
+	FamilyMembers.status,
+	SUM(Payments.amount * Payments.unit_price) as costs
+FROM FamilyMembers JOIN Payments
+ON member_id = family_member
+WHERE YEAR(Payments.date) = 2005
+GROUP BY FamilyMembers.member_name, FamilyMembers.status
+```
+
+### [Задание 18](https://sql-academy.org/ru/trainer/tasks/18)
+Узнать, кто старше всех в семьe. Поля в результирующей таблице: member_name
+
+```sql
+SELECT member_name
+FROM FamilyMembers
+ORDER BY birthday
+LIMIT 1
+```
+
+### [Задание 19](https://sql-academy.org/ru/trainer/tasks/19)
+Определить, кто из членов семьи покупал картошку (potato). Поля в результирующей таблице: status
+
+```sql
+SELECT DISTINCT status
+FROM FamilyMembers
+	JOIN Payments ON member_id = family_member
+	JOIN Goods ON good = good_id
+WHERE good_name = 'potato'
+```
+
+### [Задание 20](https://sql-academy.org/ru/trainer/tasks/20)
+Сколько и кто из семьи потратил на развлечения (entertainment). Вывести статус в семье, имя, сумму. Поля в результирующей таблице: status, member_name, costs
+
+```sql
+SELECT status, member_name,
+	SUM(amount * unit_price) as costs
+FROM FamilyMembers
+	JOIN Payments ON member_id = family_member
+	JOIN Goods ON good = good_id
+	JOIN GoodTypes ON type = good_type_id
+WHERE good_type_name = 'entertainment'
+GROUP BY status, member_name
+```
+
 
