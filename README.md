@@ -203,4 +203,122 @@ WHERE good_type_name = 'entertainment'
 GROUP BY status, member_name
 ```
 
+### [Задание 21](https://sql-academy.org/ru/trainer/tasks/21)
+Определить товары, которые покупали более 1 раза. Поля в результирующей таблице: good_name
+
+```sql
+SELECT good_name
+FROM Payments JOIN Goods ON good = good_id
+GROUP BY good_name
+HAVING count(*) > 1
+```
+
+### [Задание 22](https://sql-academy.org/ru/trainer/tasks/22)
+Найти имена всех матерей (mother). Поля в результирующей таблице: member_name
+
+```sql
+SELECT member_name
+FROM FamilyMembers
+WHERE status = 'mother'
+```
+
+### [Задание 23](https://sql-academy.org/ru/trainer/tasks/23)
+Найдите самый дорогой деликатес (delicacies) и выведите его цену. Поля в результирующей таблице: good_name, unit_price
+
+```sql
+SELECT good_name, unit_price
+FROM Payments JOIN Goods ON good = good_id
+WHERE unit_price = (
+		SELECT MAX(unit_price)
+		FROM Payments
+			JOIN Goods ON good = good_id
+			JOIN GoodTypes ON type = good_type_id
+		WHERE good_type_name = 'delicacies'
+	)
+```
+
+### [Задание 24](https://sql-academy.org/ru/trainer/tasks/24)
+Определить кто и сколько потратил в июне 2005. Поля в результирующей таблице: member_name, costs
+
+```sql
+SELECT member_name, SUM(amount * unit_price) as costs
+FROM FamilyMembers JOIN Payments
+ON member_id = family_member
+WHERE date LIKE '2005-06%'
+GROUP BY member_name
+```
+
+### [Задание 25](https://sql-academy.org/ru/trainer/tasks/25)
+Определить, какие товары не покупались в 2005 году. Поля в результирующей таблице: good_name
+
+```sql
+SELECT DISTINCT good_name
+FROM Goods
+WHERE good_name NOT IN (
+		SELECT good_name
+		FROM Payments
+			JOIN Goods ON good = good_id
+		WHERE date LIKE '2005%'
+	)
+```
+
+### [Задание 26](https://sql-academy.org/ru/trainer/tasks/26)
+Определить группы товаров, которые не приобретались в 2005 году. Поля в результирующей таблице: good_type_name
+
+```sql
+SELECT DISTINCT good_type_name
+FROM GoodTypes
+WHERE good_type_name NOT IN (
+		SELECT DISTINCT good_type_name
+		FROM Payments
+			JOIN Goods ON good = good_id
+			JOIN GoodTypes ON good_type_id = type
+		WHERE date LIKE '2005%'
+	)
+```
+
+### [Задание 27](https://sql-academy.org/ru/trainer/tasks/27)
+Определить кто и сколько потратил в июне 2005. Поля в результирующей таблице: member_name, costs
+
+```sql
+SELECT good_type_name, SUM(amount * unit_price) AS costs
+FROM Payments, Goods, GoodTypes
+WHERE good = good_id
+	AND type = good_type_id
+	AND date LIKE '2005%'
+GROUP BY good_type_name
+```
+
+### [Задание 28](https://sql-academy.org/ru/trainer/tasks/28)
+Сколько рейсов совершили авиакомпании из Ростова (Rostov) в Москву (Moscow)? Поля в результирующей таблице: count
+
+```sql
+SELECT COUNT(*) AS count
+FROM Trip
+WHERE town_from = 'Rostov'
+	AND town_to = 'Moscow'
+```
+
+### [Задание 29](https://sql-academy.org/ru/trainer/tasks/29)
+Выведите имена пассажиров улетевших в Москву (Moscow) на самолете TU-134. Поля в результирующей таблице: name
+
+```sql
+SELECT DISTINCT name
+FROM Trip, Pass_in_trip, Passenger
+WHERE Trip.id = trip
+	AND passenger = Passenger.id
+	AND town_to = 'Moscow'
+	AND plane = 'TU-134'
+```
+
+### [Задание 30](https://sql-academy.org/ru/trainer/tasks/30)
+Выведите нагруженность (число пассажиров) каждого рейса (trip). Результат вывести в отсортированном виде по убыванию нагруженности. Поля в результирующей таблице: trip, count
+
+```sql
+SELECT Trip.id AS trip, COUNT(*) AS count
+FROM Trip, Pass_in_trip
+WHERE Trip.id = Pass_in_trip.trip
+GROUP BY Trip.id
+ORDER BY count DESC
+```
 
