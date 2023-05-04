@@ -424,7 +424,140 @@ WHERE Teacher.id = Schedule.teacher
 	AND Teacher.last_name = 'Romashkin'
 ```
 
+### [Задание 41](https://sql-academy.org/ru/trainer/tasks/41)
+Во сколько начинается 4-ый учебный предмет по расписанию? Поля в результирующей таблице: start_pair
 
+```sql
+SELECT start_pair
+FROM Timepair
+WHERE id = 4
+```
+
+### [Задание 42](https://sql-academy.org/ru/trainer/tasks/42)
+Сколько времени обучающийся будет находиться в школе, учась со 2-го по 4-ый уч. предмет? Поля в результирующей таблице: time
+
+```sql
+SELECT TIMEDIFF(
+		(
+			SELECT end_pair
+			FROM Timepair
+			WHERE id = 4
+		),
+		(
+			SELECT start_pair
+			FROM Timepair
+			WHERE id = 2
+		)
+	) AS time
+```
+
+### [Задание 43](https://sql-academy.org/ru/trainer/tasks/43)
+Выведите фамилии преподавателей, которые ведут физическую культуру (Physical Culture). Отcортируйте преподавателей по фамилии. Поля в результирующей таблице: last_name
+
+```sql
+SELECT DISTINCT Teacher.last_name
+FROM Teacher, Schedule, Subject
+WHERE Teacher.id = Schedule.teacher
+	AND Schedule.subject = Subject.id
+	AND Subject.name = 'Physical Culture'
+ORDER BY Teacher.last_name
+```
+
+### [Задание 44](https://sql-academy.org/ru/trainer/tasks/44)
+Найдите максимальный возраст (колич. лет) среди обучающихся 10 классов? Поля в результирующей таблице: max_year
+
+```sql
+SELECT MAX(2022 - YEAR(Student.birthday)) AS max_year
+FROM Class, Student_in_class, Student
+WHERE Class.id = Student_in_class.class
+	AND Student_in_class.student = Student.id
+	AND Class.name LIKE '10%'
+```
+
+### [Задание 45](https://sql-academy.org/ru/trainer/tasks/45)
+Какие кабинеты чаще всего использовались для проведения занятий? Выведите те, которые использовались максимальное количество раз. Поля в результирующей таблице: classroom
+
+```sql
+WITH t AS (
+	SELECT classroom,
+		count(*) AS counts,
+		max(count(*)) OVER() AS max_counts
+	FROM Schedule
+	GROUP BY classroom
+	ORDER BY counts DESC
+)
+SELECT classroom
+FROM t
+WHERE counts = max_counts
+```
+
+### [Задание 46](https://sql-academy.org/ru/trainer/tasks/46)
+В каких классах введет занятия преподаватель "Krauze"? Поля в результирующей таблице: name
+
+```sql
+SELECT DISTINCT name
+FROM Class, Schedule, Teacher
+WHERE Class.id = Schedule.class
+	AND Schedule.teacher = Teacher.id
+	AND last_name = 'Krauze'
+```
+
+### [Задание 47](https://sql-academy.org/ru/trainer/tasks/47)
+Сколько занятий провел Krauze 30 августа 2019 г.? Поля в результирующей таблице: count
+
+```sql
+SELECT COUNT(*) AS count
+FROM Teacher, Schedule
+WHERE Teacher.id = Schedule.teacher
+	AND Teacher.last_name = 'Krauze'
+	AND Schedule.date LIKE '2019-08-30%'
+```
+
+### [Задание 48](https://sql-academy.org/ru/trainer/tasks/48)
+Выведите заполненность классов в порядке убывания. Поля в результирующей таблице: name, count
+
+```sql
+SELECT Class.name, COUNT(Student_in_class.student) as count
+FROM Class JOIN Student_in_class
+ON Class.id = Student_in_class.class
+GROUP BY Class.name
+ORDER BY count DESC
+```
+
+### [Задание 49](https://sql-academy.org/ru/trainer/tasks/49)
+Какой процент обучающихся учится в 10 A классе? Поля в результирующей таблице: percent
+
+```sql
+SELECT (
+		SELECT COUNT(*)
+		FROM Class,
+			Student_in_class,
+			Student
+		WHERE Class.id = Student_in_class.class
+			AND Student_in_class.student = Student.id
+			AND Class.name = '10 A'
+	) /(
+		SELECT COUNT(*)
+		FROM Student
+	) * 100 as percent
+```
+
+### [Задание 50](https://sql-academy.org/ru/trainer/tasks/50)
+Какой процент обучающихся родился в 2000 году? Результат округлить до целого в меньшую сторону. Поля в результирующей таблице: percent
+
+```sql
+SELECT ROUND(
+		(
+			SELECT COUNT(*)
+			FROM Student
+			WHERE YEAR(birthday) = 2000
+		) /(
+			SELECT COUNT(*)
+			FROM Student
+		) * 100,
+		0
+	) as percent
+```
 
 
 
