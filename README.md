@@ -109,6 +109,16 @@ WHERE LENGTH(name) = (
 	)
 ```
 
+### [Задание 12](https://sql-academy.org/ru/trainer/tasks/12)
+Вывести id и количество пассажиров для всех прошедших полётов. Поля в результирующей таблице: trip, count
+
+```sql
+SELECT Trip.id as trip, count(*) as count
+FROM Trip JOIN Pass_in_trip
+ON Trip.id = Pass_in_trip.trip
+GROUP BY Trip.id
+```
+
 ### [Задание 13](https://sql-academy.org/ru/trainer/tasks/13)
 Вывести имена людей, у которых есть полный тёзка среди пассажиров. Поля в результирующей таблице: name
 
@@ -321,4 +331,104 @@ WHERE Trip.id = Pass_in_trip.trip
 GROUP BY Trip.id
 ORDER BY count DESC
 ```
+
+### [Задание 31](https://sql-academy.org/ru/trainer/tasks/31)
+Вывести всех членов семьи с фамилией Quincey. Поля в результирующей таблице: *
+
+```sql
+SELECT *
+FROM FamilyMembers
+WHERE member_name LIKE '%Quincey'
+```
+
+### [Задание 32](https://sql-academy.org/ru/trainer/tasks/32)
+Вывести средний возраст людей (в годах), хранящихся в базе данных. Результат округлите до целого в меньшую сторону. Поля в результирующей таблице: age
+
+```sql
+SELECT ROUND(AVG(TIMESTAMPDIFF(YEAR, birthday, NOW()))) AS age
+FROM FamilyMembers
+```
+
+### [Задание 33](https://sql-academy.org/ru/trainer/tasks/33)
+Найдите среднюю стоимость икры. В базе данных хранятся данные о покупках красной (red caviar) и черной икры (black caviar). Поля в результирующей таблице: cost
+
+```sql
+SELECT AVG(unit_price) AS cost
+FROM Payments, Goods
+WHERE good = good_id
+	AND good_name IN ('red caviar', 'black caviar')
+```
+
+### [Задание 34](https://sql-academy.org/ru/trainer/tasks/34)
+Сколько всего 10-ых классов. Поля в результирующей таблице: count
+
+```sql
+SELECT COUNT(*) AS count
+FROM Class
+WHERE name LIKE "10%"
+```
+
+### [Задание 35](https://sql-academy.org/ru/trainer/tasks/35)
+Сколько различных кабинетов школы использовались 2.09.2019 в образовательных целях? Поля в результирующей таблице: count
+
+```sql
+SELECT COUNT(DISTINCT classroom) AS count
+FROM Schedule
+WHERE date LIKE "2019-09-02%"
+```
+
+### [Задание 36](https://sql-academy.org/ru/trainer/tasks/36)
+Выведите информацию об обучающихся живущих на улице Пушкина (ul. Pushkina)? Поля в результирующей таблице: *
+
+```sql
+SELECT *
+FROM Student
+WHERE address LIKE 'ul. Pushkina%'
+```
+
+### [Задание 37](https://sql-academy.org/ru/trainer/tasks/37)
+Сколько лет самому молодому обучающемуся? Поля в результирующей таблице: year
+
+```sql
+SELECT TIMESTAMPDIFF(YEAR, MAX(birthday), NOW()) AS year
+FROM Student
+```
+
+### [Задание 38](https://sql-academy.org/ru/trainer/tasks/38)
+Сколько Анн (Anna) учится в школе? Поля в результирующей таблице: count
+
+```sql
+SELECT COUNT(*) AS count
+FROM Student
+WHERE first_name = 'Anna'
+```
+
+### [Задание 39](https://sql-academy.org/ru/trainer/tasks/39)
+Сколько обучающихся в 10 B классе? Поля в результирующей таблице: count
+
+```sql
+SELECT COUNT(*) AS count
+FROM Class, Student_in_class
+WHERE Class.id = Student_in_class.class
+	AND Class.name = '10 B'
+```
+
+### [Задание 40](https://sql-academy.org/ru/trainer/tasks/40)
+Выведите название предметов, которые преподает Ромашкин П.П. (Romashkin P.P.)? Поля в результирующей таблице: subjects
+
+```sql
+SELECT DISTINCT Subject.name AS subjects
+FROM Teacher, Schedule, Subject
+WHERE Teacher.id = Schedule.teacher
+	AND Schedule.subject = Subject.id
+	AND Teacher.last_name = 'Romashkin'
+```
+
+
+
+
+
+
+
+
 
