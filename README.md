@@ -694,7 +694,130 @@ HAVING COUNT(DISTINCT Class.name) = (
 	)
 ```
 
+### [Задание 61](https://sql-academy.org/ru/trainer/tasks/61)
+Выведите список комнат, которые были зарезервированы в течение 12 недели 2020 года. Поля в результирующей таблице: Rooms.*
 
+```sql
+SELECT DISTINCT Rooms.*
+FROM Rooms
+	JOIN Reservations ON Rooms.id = Reservations.room_id
+WHERE DAYOFYEAR(start_date) >= 78
+	AND DAYOFYEAR(start_date) < 84
+```
+
+### [Задание 62](https://sql-academy.org/ru/trainer/tasks/62)
+Вывести в порядке убывания популярности доменные имена 2-го уровня, используемые пользователями для электронной почты. Полученный результат необходимо дополнительно отсортировать по возрастанию названий доменных имён. Поля в результирующей таблице: domain, count
+
+```sql
+SELECT SUBSTRING(email, (INSTR(email, "@") + 1)) as domain,
+	COUNT(1) as count
+FROM Users
+GROUP BY domain
+ORDER BY count DESC, domain
+```
+
+### [Задание 63](https://sql-academy.org/ru/trainer/tasks/63)
+Выведите отсортированный список (по возрастанию) фамилий и имен студентов в виде Фамилия.И. Поля в результирующей таблице: name
+
+```sql
+SELECT CONCAT(last_name, ".", SUBSTRING(first_name, 1, 1), ".") as name
+FROM Student
+ORDER BY last_name, first_name
+```
+
+### [Задание 64](https://sql-academy.org/ru/trainer/tasks/64)
+Вывести количество бронирований по каждому месяцу каждого года, в которых было хотя бы 1 бронирование. Результат отсортируйте в порядке возрастания даты бронирования. Поля в результирующей таблице: year, month, amount
+
+```sql
+SELECT YEAR(start_date) as year,
+	MONTH(start_date) as month,
+	COUNT(1) as amount
+FROM Reservations
+GROUP BY year, month
+HAVING amount >= 1
+ORDER BY year, month
+```
+
+### [Задание 65](https://sql-academy.org/ru/trainer/tasks/65)
+Необходимо вывести рейтинг для комнат, которые хоть раз арендовали, как среднее значение рейтинга отзывов округленное до целого вниз. Поля в результирующей таблице: room_id, rating
+
+```sql
+SELECT room_id, FLOOR(SUM(rating) / COUNT(1)) as rating
+FROM Reviews JOIN Reservations
+ON Reviews.reservation_id = Reservations.id
+GROUP BY room_id
+```
+
+### [Задание 66](https://sql-academy.org/ru/trainer/tasks/66)
+Вывести список комнат со всеми удобствами (наличие ТВ, интернета, кухни и кондиционера), а также общее количество дней и сумму за все дни аренды каждой из таких комнат. Поля в результирующей таблице: home_type, address, days, total_fee
+
+```sql
+SELECT home_type,
+	address,
+	COALESCE(SUM(DATEDIFF(end_date, start_date)), 0) as days,
+	COALESCE(SUM(total), 0) as total_fee
+FROM Rooms
+	LEFT JOIN Reservations ON Reservations.room_id = Rooms.id
+WHERE has_tv = 1
+	AND has_internet = 1
+	AND has_kitchen = 1
+	AND has_air_con = 1
+GROUP BY home_type, address
+```
+
+### [Задание 67](https://sql-academy.org/ru/trainer/tasks/67)
+Вывести время отлета и время прилета для каждого перелета в формате "ЧЧ:ММ, ДД.ММ - ЧЧ:ММ, ДД.ММ", где часы и минуты с ведущим нулем, а день и месяц без. Поля в результирующей таблице: flight_time
+
+```sql
+SELECT CONCAT(
+		DATE_FORMAT(time_out, "%H:%i, %e.%c"),
+		" - ",
+		DATE_FORMAT(time_in, "%H:%i, %e.%c")
+	) as flight_time
+FROM Trip
+```
+
+### [Задание 68](https://sql-academy.org/ru/trainer/tasks/68)
+Для каждой комнаты, которую снимали как минимум 1 раз, найдите имя человека, снимавшего ее последний раз, и дату, когда он выехал Поля в результирующей таблице: room_id, name, end_date
+
+```sql
+SELECT re1.room_id as room_id,
+	u.name,
+	re1.end_date
+FROM Rooms as r1
+	JOIN Reservations re1 ON r1.id = re1.room_id
+	JOIN Users as u ON re1.user_id = u.id
+WHERE end_date = (
+		SELECT MAX(end_date)
+		FROM Reservations as re2
+		WHERE re2.room_id = re1.room_id
+	)
+```
+
+### [Задание 69](https://sql-academy.org/ru/trainer/tasks/69)
+Вывести идентификаторы всех владельцев комнат, что размещены на сервисе бронирования жилья и сумму, которую они заработали. Поля в результирующей таблице: owner_id, total_earn
+
+```sql
+SELECT owner_id, COALESCE(SUM(total), 0) as total_earn
+FROM Rooms LEFT JOIN Reservations
+ON Rooms.id = Reservations.room_id
+GROUP BY owner_id
+```
+
+### [Задание 70](https://sql-academy.org/ru/trainer/tasks/70)
+Необходимо категоризовать жилье на economy, comfort, premium по цене соответственно <= 100, 100 < цена < 200, >= 200. В качестве результата вывести таблицу с названием категории и количеством жилья, попадающего в данную категорию. Поля в результирующей таблице: category, count
+
+```sql
+SELECT CASE
+		WHEN price <= 100 THEN "economy"
+		WHEN price > 100
+		AND price < 200 THEN "comfort"
+		WHEN price >= 200 THEN "premium"
+	END as category,
+	COUNT(1) as count
+FROM Rooms
+GROUP BY category
+```
 
 
 
