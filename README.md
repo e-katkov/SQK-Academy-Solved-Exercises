@@ -819,9 +819,48 @@ FROM Rooms
 GROUP BY category
 ```
 
+### [Задание 71](https://sql-academy.org/ru/trainer/tasks/71)
+Найдите какой процент пользователей, зарегистрированных на сервисе бронирования, хоть раз арендовали или сдавали в аренду жилье. Результат округлите до сотых. Поля в результирующей таблице: percent
 
+```sql
+SELECT ROUND(
+		(
+			SELECT COUNT(DISTINCT Users.id)
+			FROM Users,
+				Rooms,
+				Reservations
+			WHERE Users.id = Reservations.user_id
+				OR (
+					Users.id = Rooms.owner_id
+					AND Rooms.id = Reservations.room_id
+				)
+		) / (
+			SELECT COUNT(1)
+			FROM Users
+		) * 100,
+		2
+	) as percent
+```
 
+### [Задание 72](https://sql-academy.org/ru/trainer/tasks/72)
+Выведите среднюю стоимость бронирования для комнат, которых бронировали хотя бы один раз. Среднюю стоимость необходимо округлить до целого значения вверх. Поля в результирующей таблице: room_id, avg_price
 
+```sql
+SELECT room_id,
+	CEILING(SUM(Reservations.price) / COUNT(1)) as avg_price
+FROM Rooms
+	JOIN Reservations ON Rooms.id = Reservations.room_id
+GROUP BY room_id
+```
 
+### [Задание 73](https://sql-academy.org/ru/trainer/tasks/73)
+Выведите id тех комнат, которые арендовали нечетное количество раз. Поля в результирующей таблице: room_id, count
 
-
+```sql
+SELECT room_id,
+	COUNT(1) as count
+FROM Rooms
+	JOIN Reservations ON Rooms.id = Reservations.room_id
+GROUP BY room_id
+HAVING COUNT(1) %2 = 1
+```
