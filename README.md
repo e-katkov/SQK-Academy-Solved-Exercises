@@ -559,6 +559,143 @@ SELECT ROUND(
 	) as percent
 ```
 
+### [Задание 51](https://sql-academy.org/ru/trainer/tasks/51)
+Добавьте товар с именем "Cheese" и типом "food" в список товаров (Goods).
+
+```sql
+INSERT INTO Goods (good_id, good_name, type)
+SELECT MAX(good_id) + 1,
+	"Cheese",
+	(
+		SELECT DISTINCT type
+		FROM Goods,
+			GoodTypes
+		WHERE good_type_id = type
+			AND good_type_name = "food"
+	)
+FROM Goods
+```
+
+### [Задание 52](https://sql-academy.org/ru/trainer/tasks/52)
+Добавьте в список типов товаров (GoodTypes) новый тип "auto".
+
+```sql
+INSERT into GoodTypes (good_type_id, good_type_name)
+SELECT MAX(good_type_id) + 1,
+	'auto'
+FROM GoodTypes
+```
+
+### [Задание 53](https://sql-academy.org/ru/trainer/tasks/53)
+Измените имя "Andie Quincey" на новое "Andie Anthony".
+
+```sql
+UPDATE FamilyMembers
+SET member_name = 'Andie Anthony'
+WHERE member_name = 'Andie Quincey'
+```
+
+### [Задание 54](https://sql-academy.org/ru/trainer/tasks/54)
+Удалить всех членов семьи с фамилией "Quincey".
+
+```sql
+DELETE FROM FamilyMembers
+WHERE member_name LIKE '% Quincey'
+```
+
+### [Задание 55](https://sql-academy.org/ru/trainer/tasks/55)
+Удалить компании, совершившие наименьшее количество рейсов.
+
+```sql
+
+MySQL
+
+DELETE FROM Company
+WHERE id IN (
+		SELECT company
+		FROM Trip
+		GROUP BY company
+		HAVING COUNT(1) = (
+				SELECT COUNT(1) as count
+				FROM Trip as t
+				GROUP BY company
+				ORDER BY count
+				LIMIT 1
+			)
+	)
+```
+
+### [Задание 56](https://sql-academy.org/ru/trainer/tasks/56)
+Удалить все перелеты, совершенные из Москвы (Moscow).
+
+```sql
+DELETE FROM Trip
+WHERE town_from = 'Moscow'
+```
+
+### [Задание 57](https://sql-academy.org/ru/trainer/tasks/57)
+Перенести расписание всех занятий на 30 мин. вперед.
+
+```sql
+UPDATE Timepair
+SET start_pair = TIMESTAMPADD(MINUTE, 30, start_pair),
+	end_pair = TIMESTAMPADD(MINUTE, 30, end_pair)
+```
+
+### [Задание 58](https://sql-academy.org/ru/trainer/tasks/58)
+Добавить отзыв с рейтингом 5 на жилье, находящиеся по адресу "11218, Friel Place, New York", от имени "George Clooney"
+
+```sql
+INSERT INTO Reviews (id, reservation_id, rating)
+VALUES (
+		(
+			SELECT MAX(id) + 1
+			FROM Reviews as r
+		),
+		(
+			SELECT Reservations.id
+			FROM Users
+				JOIN Reservations ON Users.id = Reservations.user_id
+				JOIN Rooms ON Reservations.room_id = Rooms.id
+			WHERE Rooms.address = "11218, Friel Place, New York"
+				AND Users.name = "George Clooney"
+		),
+		5
+	)
+```
+
+### [Задание 59](https://sql-academy.org/ru/trainer/tasks/59)
+Вывести пользователей,указавших Белорусский номер телефона ? Телефонный код Белоруссии +375. Поля в результирующей таблице: *
+
+```sql
+SELECT *
+FROM Users
+WHERE phone_number LIKE '+375%'
+```
+
+### [Задание 60](https://sql-academy.org/ru/trainer/tasks/60)
+Выведите идентификаторы преподавателей, которые хотя бы один раз за всё время преподавали в каждом из одиннадцатых классов. Поля в результирующей таблице: teacher
+
+```sql
+SELECT Teacher.id as teacher
+FROM Teacher
+	JOIN Schedule ON Teacher.id = Schedule.teacher
+	JOIN Class ON Schedule.class = Class.id
+WHERE Class.name IN (
+		SELECT name
+		FROM Class
+		WHERE name LIKE "11%"
+	)
+GROUP BY Teacher.id
+HAVING COUNT(DISTINCT Class.name) = (
+		SELECT COUNT(name)
+		FROM Class
+		WHERE name LIKE "11%"
+	)
+```
+
+
+
 
 
 
