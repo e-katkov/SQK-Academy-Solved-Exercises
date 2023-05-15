@@ -607,9 +607,6 @@ WHERE member_name LIKE '% Quincey'
 Удалить компании, совершившие наименьшее количество рейсов.
 
 ```sql
-
-MySQL
-
 DELETE FROM Company
 WHERE id IN (
 		SELECT company
